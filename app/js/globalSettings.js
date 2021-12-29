@@ -1,35 +1,35 @@
 module.exports = class GlobalSettings {
     constructor(settings) {
         this.fontSize = "15";
-        
+
+        this.trace = {
+            textColor: "#3B1051",
+            backgroundColor: "rgba(235, 206, 254, 0.9)",
+            pattern: "TRACE"
+        };
+
         this.debug = {
-            textColor: "#155724", 
-            backgroundColor: "rgba(212, 237, 218, 0.9)",
+            textColor: "#132554",
+            backgroundColor: "rgba(203, 217, 254, 0.9)",
             pattern: "DEBUG"
         };
 
         this.info = {
-            textColor: "#000000", 
-            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            textColor: "#093714",
+            backgroundColor: "rgba(212, 237, 218, 0.9)",
             pattern: "INFO"
         };
 
         this.warning = {
-            textColor: "#856404", 
+            textColor: "#413207",
             backgroundColor: "rgba(255, 193, 7, 0.9)",
             pattern: "WARN"
         };
 
         this.error = {
-            textColor: "#721c24", 
-            backgroundColor: "rgba(255, 82, 82, 0.9)",
+            textColor: "#64171E",
+            backgroundColor: "rgba(246, 115, 115, 0.9)",
             pattern: "ERROR"
-        };
-
-        this.fatal = {
-            textColor: "#721c24", 
-            backgroundColor: "rgba(255, 82, 82, 0.9)",
-            pattern: "FATAL"
         };
 
         if (settings) {

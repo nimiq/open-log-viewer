@@ -1,5 +1,9 @@
 module.exports = class FileSettings {
     constructor() {
+        this.trace = {
+            show: true
+        };
+
         this.debug = {
             show: true
         };
@@ -13,10 +17,6 @@ module.exports = class FileSettings {
         };
 
         this.error = {
-            show: true
-        };
-
-        this.fatal = {
             show: true
         };
     }

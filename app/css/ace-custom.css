@@ -6,11 +6,11 @@ div.ace_layer.ace_text-layer {
     margin: 0 !important;
 }
 
+.ace_trace,
 .ace_debug,
 .ace_info,
-.ace_warning, 
-.ace_error, 
-.ace_fatal {
+.ace_warning,
+.ace_error {
     padding-left: 4px;
     display: inherit;
 }

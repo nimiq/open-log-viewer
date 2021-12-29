@@ -47,7 +47,7 @@
 		data() {
 			return {
 				toolbarHeight: 40,
-				logLevels: ["Debug", "Info", "Warning", "Error", "Fatal"],
+				logLevels: ["Trace", "Debug", "Info", "Warning", "Error"],
 				logLevelsSelected: this.getLogLevelsToShow(),
 				height: this.calcHeight(),
 				scrollToEnd: false,
@@ -71,10 +71,7 @@
         		return this.currentFileSettings.info;
 			},
 			getSeveritySettings(line) {
-				if (line.search(this.globalSettings.fatal.pattern) !== -1) {
-					return this.currentFileSettings.fatal;
-				}
-				else if (line.search(this.globalSettings.error.pattern) !== -1) {
+				if (line.search(this.globalSettings.error.pattern) !== -1) {
 					return this.currentFileSettings.error;
 				}
 				else if (line.search(this.globalSettings.warning.pattern) !== -1) {
@@ -86,6 +83,9 @@
 				else if (line.search(this.globalSettings.debug.pattern) !== -1) {
 					return this.currentFileSettings.debug;
 				}
+				else if (line.search(this.globalSettings.trace.pattern) !== -1) {
+                    return this.currentFileSettings.trace;
+                }
 				else {
 					return null;
 				}

@@ -27,41 +27,41 @@
                         </v-layout>
 
                         <v-layout row wrap>
-                            <log-severity-setting 
-                                severity="DEBUG" 
-                                :setting="settingsDebug" 
+                            <log-severity-setting
+                                severity="TRACE"
+                                :setting="settingsTrace"
                                 @textColorChanged="textColorChangedHandler"
                                 @backgroundColorChanged="backgroundColorChangedHandler"
                                 @patternChanged="patternChangedHandler">
                             </log-severity-setting>
 
-                            <log-severity-setting 
+                            <log-severity-setting
+                                severity="DEBUG"
+                                :setting="settingsDebug"
+                                @textColorChanged="textColorChangedHandler"
+                                @backgroundColorChanged="backgroundColorChangedHandler"
+                                @patternChanged="patternChangedHandler">
+                            </log-severity-setting>
+
+                            <log-severity-setting
                                 severity="INFO"
-                                :setting="settingsInfo" 
+                                :setting="settingsInfo"
                                 @textColorChanged="textColorChangedHandler"
                                 @backgroundColorChanged="backgroundColorChangedHandler"
                                 @patternChanged="patternChangedHandler">
                             </log-severity-setting>
 
-                            <log-severity-setting 
+                            <log-severity-setting
                                 severity="WARNING"
-                                :setting="settingsWarning" 
+                                :setting="settingsWarning"
                                 @textColorChanged="textColorChangedHandler"
                                 @backgroundColorChanged="backgroundColorChangedHandler"
                                 @patternChanged="patternChangedHandler">
                             </log-severity-setting>
 
-                            <log-severity-setting 
+                            <log-severity-setting
                                 severity="ERROR"
-                                :setting="settingsError" 
-                                @textColorChanged="textColorChangedHandler"
-                                @backgroundColorChanged="backgroundColorChangedHandler"
-                                @patternChanged="patternChangedHandler">
-                            </log-severity-setting>
-
-                            <log-severity-setting 
-                                severity="FATAL"
-                                :setting="settingsFatal" 
+                                :setting="settingsError"
                                 @textColorChanged="textColorChangedHandler"
                                 @backgroundColorChanged="backgroundColorChangedHandler"
                                 @patternChanged="patternChangedHandler">
@@ -133,17 +133,17 @@
                 showRestartAppDialog: false,
                 isDisabledSaveButton: false,
                 fontSize: this.settings.fontSize,
+                settingsTrace: this.settings.trace,
                 settingsDebug: this.settings.debug,
                 settingsInfo: this.settings.info,
                 settingsWarning: this.settings.warning,
                 settingsError: this.settings.error,
-                settingsFatal: this.settings.fatal,
                 changes: {
+                    trace: {},
                     debug: {},
                     info: {},
                     warning: {},
-                    error: {},
-                    fatal: {}
+                    error: {}
                 },
                 rules: {
                     required: value => !!value || this.$t('required'),
@@ -161,11 +161,11 @@
                     this.showRestartAppDialog = false;
                     
                     this.changes = {
+                        trace: {},
                         debug: {},
                         info: {},
                         warning: {},
-                        error: {},
-                        fatal: {}
+                        error: {}
                     };
                 }
             }
@@ -192,11 +192,11 @@
                 this.showDialog = false;
 
                 this.fontSize = this.settings.fontSize;
+                this.settingsTrace = Object.assign({}, this.settings.trace);
                 this.settingsDebug = Object.assign({}, this.settings.debug);
                 this.settingsInfo = Object.assign({}, this.settings.info);
                 this.settingsWarning = Object.assign({}, this.settings.warning);
                 this.settingsError = Object.assign({}, this.settings.error);
-                this.settingsFatal = Object.assign({}, this.settings.fatal);
 
                 this.$emit('close');
             },
@@ -231,11 +231,11 @@
                 this.save(true);
             },
             isAnyPatternChanged() {
-                return (this.changes.debug.pattern && this.changes.debug.pattern !== this.settings.debug.pattern) || 
+                return (this.changes.trace.pattern && this.changes.trace.pattern !== this.settings.trace.pattern) ||
+                        (this.changes.debug.pattern && this.changes.debug.pattern !== this.settings.debug.pattern) ||
                         (this.changes.info.pattern && this.changes.info.pattern !== this.settings.info.pattern) ||
                         (this.changes.warning.pattern && this.changes.warning.pattern !== this.settings.warning.pattern) ||
-                        (this.changes.error.pattern && this.changes.error.pattern !== this.settings.error.pattern) || 
-                        (this.changes.fatal.pattern && this.changes.fatal.pattern !== this.settings.fatal.pattern);
+                        (this.changes.error.pattern && this.changes.error.pattern !== this.settings.error.pattern);
             }
         }
 	}

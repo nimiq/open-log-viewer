@@ -25,7 +25,13 @@ module.exports = class AceEditor {
         ace.define('ace/mode/log_file_highlight_rules', (require, exports, module) => {
             const oop = require("ace/lib/oop");
             const TextHighlightRules = require("ace/mode/text_highlight_rules").TextHighlightRules;
-            
+
+            const traceRule = {
+                token: "trace",
+                regex: ".*" + globalSettings.trace.pattern + ".*",
+                next: "trace"
+            };
+
             const debugRule = {
                 token: "debug",
                 regex: ".*" + globalSettings.debug.pattern + ".*",
@@ -50,12 +56,6 @@ module.exports = class AceEditor {
                 next: "error"
             };
 
-            const fatalRule = {
-                token: "fatal",
-                regex: ".*" + globalSettings.fatal.pattern + ".*",
-                next: "fatal"
-            };
-
             function noMatchRule(severity) {
                 return {
                     token: severity,
@@ -66,12 +66,12 @@ module.exports = class AceEditor {
             
             const LogFileHighlightRules = function() {
                 this.$rules = {
-                    start: [debugRule, infoRule, warningRule, errorRule, fatalRule],
-                    debug: [debugRule, infoRule, warningRule, errorRule, fatalRule, noMatchRule("debug")],
-                    info: [debugRule, infoRule, warningRule, errorRule, fatalRule, noMatchRule("info")],
-                    warning: [debugRule, infoRule, warningRule, errorRule, fatalRule, noMatchRule("warning")],
-                    error: [debugRule, infoRule, warningRule, errorRule, fatalRule, noMatchRule("error")],
-                    fatal: [debugRule, infoRule, warningRule, errorRule, fatalRule, noMatchRule("fatal")]
+                    start: [traceRule, debugRule, infoRule, warningRule, errorRule],
+                    trace: [traceRule, debugRule, infoRule, warningRule, errorRule, noMatchRule("trace")],
+                    debug: [traceRule, debugRule, infoRule, warningRule, errorRule, noMatchRule("debug")],
+                    info: [traceRule, debugRule, infoRule, warningRule, errorRule, noMatchRule("info")],
+                    warning: [traceRule, debugRule, infoRule, warningRule, errorRule, noMatchRule("warning")],
+                    error: [traceRule, debugRule, infoRule, warningRule, errorRule, noMatchRule("error")]
                 };
             }
 
