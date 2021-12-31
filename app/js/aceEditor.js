@@ -86,7 +86,7 @@ module.exports = class AceEditor {
 
         viewer.setOptions({
             readOnly: true,
-            highlightActiveLine: false,
+            highlightActiveLine: true,
             showPrintMargin: false,
             displayIndentGuides: false,
             mode: "ace/mode/log_file",

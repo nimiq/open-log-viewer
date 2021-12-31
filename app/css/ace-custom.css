@@ -6,6 +6,10 @@ div.ace_layer.ace_text-layer {
     margin: 0 !important;
 }
 
+.ace_active-line {
+    background: #000000 !important;
+}
+
 .ace_trace,
 .ace_debug,
 .ace_info,
