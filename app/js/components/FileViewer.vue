@@ -57,7 +57,18 @@
 		mounted: function() {
 			window.addEventListener('resize', this.handleResize);
 
-			this.viewer = AceEditor.createViewer(this.$refs.viewer, this.globalSettings);
+			const viewer = AceEditor.createViewer(this.$refs.viewer, this.globalSettings);
+
+			viewer.session.selection.on('changeCursor', e => {
+				const cursor = viewer.selection.getCursor();
+				const timestamp = this.getTimestampFromLine(cursor.row);
+				if (timestamp) {
+					const scrollOffset = viewer.session.getScrollTop() - this.getRowOffset(cursor.row);
+					this.$emit("cursorTimestampChanged", timestamp, scrollOffset, cursor.column, this);
+				}
+			});
+
+			this.viewer = viewer;
 
 			this.startTail();
 		},
@@ -174,6 +185,73 @@
 			},
 			focus() {
 				this.viewer.focus();
+			},
+			getTimestampFromLine(row) {
+				const line = this.viewer.session.getLine(row);
+				const regex = /^\s*(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}(\.\d+)?)/;
+				const matches = line.match(regex);
+				if (matches && matches[1]) {
+					let timestamp = Date.parse(matches[1]);
+					return !isNaN(timestamp) ? timestamp : 0;
+				}
+				return 0;
+			},
+			scrollToTimestamp(timestamp, scrollOffset, cursorColumn) {
+				const row = this.findRowAtTimestamp(timestamp);
+				if (row !== false) {
+					// gotoLine() needs to be called before setScrollTop().
+					// Otherwise, the broken editor scrolling logic will mess up the scroll position.
+					this.viewer.gotoLine(row + 1, cursorColumn, false);
+
+					// We need to scroll manually here because editor.scrollToLine() doesn't work correctly.
+					const scrollTop = this.getRowOffset(row) + scrollOffset;
+					this.viewer.session.setScrollTop(scrollTop);
+				}
+			},
+			getRowOffset(row) {
+				const pos = this.viewer.session.documentToScreenPosition({row: row, column: 0});
+				// FIXME Get line height from editor (or fix editor scrolling).
+				//  Only works with the default font size.
+				return pos.row * 18;
+			},
+			findRowAtTimestamp(timestamp) {
+				let lo = 0;
+				let hi = this.viewer.session.getLength() - 1;
+				let min = Number.MAX_SAFE_INTEGER;
+				let best = false;
+
+				while (lo <= hi) {
+					let mid = Math.floor((lo + hi) / 2);
+					let ts = this.getTimestampFromLine(mid);
+					let mid_ts = mid;
+					for (let i = 1; !ts && mid - i >= lo; i++) {
+						mid_ts = mid - i;
+						ts = this.getTimestampFromLine(mid_ts);
+					}
+					for (let i = 1; !ts && mid + i <= hi; i++) {
+						mid_ts = mid + i;
+						ts = this.getTimestampFromLine(mid_ts);
+					}
+					if (!ts) {
+						break;
+					}
+
+					let diff = Math.abs(timestamp - ts);
+					if (diff < min) {
+						min = diff;
+						best = mid_ts;
+					}
+
+					if (timestamp < ts) {
+						hi = mid - 1;
+					} else if (timestamp > ts) {
+						lo = mid + 1;
+					} else {
+						break;
+					}
+				}
+
+				return best;
 			}
 		}
 	}

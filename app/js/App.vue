@@ -26,6 +26,7 @@
 					:file-settings="tab.fileSettings"
 					:global-settings="globalSettings"
 					@settingsButtonClicked="settingsButtonClicked"
+					@cursorTimestampChanged="cursorTimestampChanged"
 					@fileNotFoundError="fileNotFoundErrorHandler" />
 			</v-tab-item>
 		</v-tabs-items>
@@ -217,6 +218,18 @@
 					this.$refs.fileViewer.forEach(fileViewer => {
 						fileViewer.changeFontSize(fontSize);
 					});
+				}
+			},
+			cursorTimestampChanged(timestamp, scrollOffset, cursorColumn, source) {
+				const tabIndex = this.tabs.findIndex(tab => 'tab' + tab.id === this.currentTab);
+				if (source !== this.$refs.fileViewer[tabIndex]) {
+					return;
+				}
+
+				for (const viewer of this.$refs.fileViewer) {
+					if (viewer !== source) {
+						viewer.scrollToTimestamp(timestamp, scrollOffset, cursorColumn);
+					}
 				}
 			}
 		}
