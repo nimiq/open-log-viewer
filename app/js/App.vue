@@ -1,7 +1,7 @@
 <template>
     <v-app id="drag-and-drop-zone">
 		<v-tabs show-arrows v-model="currentTab" hide-slider>
-			<v-tab v-for="(tab, i) in tabs" :key="tab.id" :title="tab.filePath" :href="'#tab' + tab.id">
+			<v-tab v-for="(tab, i) in tabs" :key="tab.id" :title="tab.filePath" :href="'#tab' + tab.id" @change="onTabChanged(i)">
 
 				{{ tab.fileName }}
 
@@ -141,6 +141,12 @@
 				userPreferences.removeFile(this.tabs[index].filePath);
 
 				this.tabs.splice(index, 1);
+			},
+			onTabChanged(index) {
+				const viewer = this.$refs.fileViewer[index];
+				if (viewer) {
+					viewer.focus();
+				}
 			},
 			showCloseButton() {
 				return this.tabs.length > 1

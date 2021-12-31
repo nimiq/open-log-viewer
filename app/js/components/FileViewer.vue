@@ -171,6 +171,9 @@
 				if (this.scrollToEnd) {
 					this.viewer.scrollToLine(totalLines + 1, false, false);
 				}
+			},
+			focus() {
+				this.viewer.focus();
 			}
 		}
 	}
