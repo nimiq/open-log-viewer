@@ -15,6 +15,10 @@
 
 			<v-divider class="mx-3" inset vertical></v-divider>
 
+			<v-btn :depressed="syncTimestamps" :flat="!syncTimestamps" icon color="grey darken-1" @click="syncTimestampsClicked">
+				<v-icon :title="$t('sync-timestamps')" style="font-size: 24px">sync_alt</v-icon>
+			</v-btn>
+
 			<v-btn :depressed="scrollToEnd" :flat="!scrollToEnd" icon color="grey darken-1" @click="scrollToEndClicked">
 				<v-icon :title="$t('scroll-to-end')" style="font-size: 24px">vertical_align_bottom</v-icon>
 			</v-btn>
@@ -51,6 +55,7 @@
 				logLevelsSelected: this.getLogLevelsToShow(),
 				height: this.calcHeight(),
 				scrollToEnd: false,
+				syncTimestamps: true,
 				currentFileSettings: this.fileSettings
 			}
 		},
@@ -62,7 +67,7 @@
 			viewer.session.selection.on('changeCursor', e => {
 				const cursor = viewer.selection.getCursor();
 				const timestamp = this.getTimestampFromLine(cursor.row);
-				if (timestamp) {
+				if (this.syncTimestamps && timestamp) {
 					const scrollOffset = viewer.session.getScrollTop() - this.getRowOffset(cursor.row);
 					this.$emit("cursorTimestampChanged", timestamp, scrollOffset, cursor.column, this);
 				}
@@ -118,6 +123,9 @@
 			},
 			changeFontSize(fontSize) {
 				this.viewer.setFontSize(fontSize + "px");
+			},
+			syncTimestampsClicked() {
+				this.syncTimestamps = !this.syncTimestamps;
 			},
 			scrollToEndClicked() {
 				this.scrollToEnd = !this.scrollToEnd;
@@ -197,6 +205,10 @@
 				return 0;
 			},
 			scrollToTimestamp(timestamp, scrollOffset, cursorColumn) {
+				if (!this.syncTimestamps) {
+					return;
+				}
+
 				const row = this.findRowAtTimestamp(timestamp);
 				if (row !== false) {
 					// gotoLine() needs to be called before setScrollTop().
