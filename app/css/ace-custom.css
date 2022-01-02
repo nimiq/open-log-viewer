@@ -16,5 +16,6 @@ div.ace_layer.ace_text-layer {
 .ace_warning,
 .ace_error {
     padding-left: 4px;
+    padding-top: 1px;
     display: inherit;
 }

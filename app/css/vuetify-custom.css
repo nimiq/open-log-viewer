@@ -10,3 +10,8 @@ html {
 .v-tabs__item--active {
     background-color: #fafafa;
 }
+
+.v-btn--depressed.grey {
+    background-color: #bdbdbd !important;
+    border-color: #bdbdbd !important;
+}
