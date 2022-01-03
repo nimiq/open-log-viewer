@@ -1,11 +1,11 @@
 <template>
     <v-app id="drag-and-drop-zone">
 		<v-tabs show-arrows v-model="currentTab" hide-slider>
-			<v-tab v-for="(tab, i) in tabs" :key="tab.id" :title="tab.filePath" :href="'#tab' + tab.id" @change="onTabChanged(i)">
+			<v-tab v-for="(tab, i) in tabs" :key="tab.id" :title="tab.filePath" :href="'#tab' + tab.id" @change="onTabChanged('tab' + tab.id)">
 
 				{{ tab.fileName }}
 
-				<v-btn flat icon @click.stop.prevent="closeTab(i)" v-show="showCloseButton()">
+				<v-btn flat icon @click.stop.prevent="closeTab(i)" :disabled="!showCloseButton()">
 					<v-icon>close</v-icon>
 				</v-btn>
 		    </v-tab>
@@ -17,11 +17,11 @@
 
 		<v-tabs-items v-model="currentTab">
 			<v-tab-item v-for="tab in tabs" :key="tab.id" :value="'tab' + tab.id" >
-				<file-chooser v-if="!tab.filePath" @change="onFileChanged($event, tab)" />
+				<file-chooser v-if="!tab.hasFile()" @change="onFileChanged($event, tab)" />
 	
 				<file-viewer 
 					ref="fileViewer" 
-					v-if="tab.filePath" 
+					v-if="tab.hasFile()"
 					:file="tab.filePath" 
 					:file-settings="tab.fileSettings"
 					:global-settings="globalSettings"
@@ -141,16 +141,20 @@
 			closeTab(index) {
 				userPreferences.removeFile(this.tabs[index].filePath);
 
-				this.tabs.splice(index, 1);
+				if (this.tabs.length > 1) {
+					this.tabs.splice(index, 1);
+				} else {
+					this.tabs[0].reset(this.$t("new-file"));
+				}
 			},
-			onTabChanged(index) {
-				const viewer = this.$refs.fileViewer[index];
+			onTabChanged(tabId) {
+				const viewer = this.getViewerForTab(tabId);
 				if (viewer) {
 					viewer.focus();
 				}
 			},
 			showCloseButton() {
-				return this.tabs.length > 1
+				return this.tabs.length > 1 || this.tabs[0].hasFile();
 			},
 			onFileChanged(event, tab) {
 				if (event.target.files.length > 0) {
@@ -220,9 +224,17 @@
 					});
 				}
 			},
+			getViewerForTab(tabId) {
+				if (!this.$refs.fileViewer) {
+					return undefined;
+				}
+				const tabIndex = this.tabs
+						.filter(tab => tab.hasFile())
+						.findIndex(tab => 'tab' + tab.id === tabId);
+				return this.$refs.fileViewer[tabIndex];
+			},
 			cursorTimestampChanged(timestamp, scrollOffset, cursorColumn, source) {
-				const tabIndex = this.tabs.findIndex(tab => 'tab' + tab.id === this.currentTab);
-				if (source !== this.$refs.fileViewer[tabIndex]) {
+				if (source !== this.getViewerForTab(this.currentTab)) {
 					return;
 				}
 

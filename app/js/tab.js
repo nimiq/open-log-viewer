@@ -25,4 +25,14 @@ module.exports = class Tab {
     setFileSettings(fileSettings) {
         this.fileSettings = fileSettings;
     }
+
+    reset(fileName) {
+        this.fileName = fileName;
+        this.filePath = null;
+        this.fileSettings = null;
+    }
+
+    hasFile() {
+        return !!this.filePath;
+    }
 }
