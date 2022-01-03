@@ -16,8 +16,8 @@
 		</v-tabs>
 
 		<v-tabs-items v-model="currentTab">
-			<v-tab-item v-for="tab in tabs" :key="tab.id" :value="'tab' + tab.id" >
-				<file-chooser v-if="!tab.hasFile()" @change="onFileChanged($event, tab)" />
+			<v-tab-item v-for="(tab, i) in tabs" :key="tab.id" :value="'tab' + tab.id" >
+				<file-chooser v-if="!tab.hasFile()" @change="onFileChanged($event, tab, i)" />
 	
 				<file-viewer 
 					ref="fileViewer" 
@@ -158,17 +158,20 @@
 			showCloseButton() {
 				return this.tabs.length > 1 || this.tabs[0].hasFile();
 			},
-			onFileChanged(event, tab) {
-				if (event.target.files.length > 0) {
-					const selectedFileName = event.target.files[0].name;
-					const selectedFilePath = event.target.files[0].path;
-					const fileSettings = new FileSettings();
+			onFileChanged(event, tab, tabIndex) {
+				for (let file of event.target.files) {
+					if (!tab) {
+						tab = new Tab();
+						this.tabs.splice(++tabIndex, 0, tab);
+					}
 
-					tab.setFileName(selectedFileName);
-					tab.setFilePath(selectedFilePath);
-					tab.setFileSettings(fileSettings);
+					const settings = new FileSettings();
+					tab.setFileName(file.name);
+					tab.setFilePath(file.path);
+					tab.setFileSettings(settings);
+					userPreferences.addFile(file.name, file.path, settings);
 
-					userPreferences.addFile(selectedFileName, selectedFilePath, fileSettings);
+					tab = null;
 				}
 			},
 			fileNotFoundErrorHandler(event) {
