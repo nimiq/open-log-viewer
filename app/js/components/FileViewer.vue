@@ -115,8 +115,15 @@
 				userPreferences.saveFileSettings(this.file, this.currentFileSettings);
 
 				tail.stop();
+
+				// Preserve cursor timestamp.
+				const cursor = this.viewer.selection.getCursor();
+				const timestamp = this.getTimestampFromLine(cursor.row);
+				const scrollOffset = this.viewer.session.getScrollTop() - this.getRowOffset(cursor.row);
+				const restoreCursor = this.scrollToTimestamp.bind(this, timestamp, scrollOffset, cursor.column);
+
 				this.clean();
-				this.startTail();
+				this.startTail(restoreCursor);
 			},
 			clean() {
 				this.viewer.setValue("");
@@ -133,7 +140,7 @@
 			settingsButtonClicked() {
 				this.$emit('settingsButtonClicked');
 			},
-			startTail() {
+			startTail(restoreCursor) {
 				tail = new Tail(this.file, 1000);
 
 				let previousLineSeveritySettings = this.defaultLogLevel();
@@ -171,6 +178,11 @@
 
 						this.scrollToEndCommand();
 					});
+
+					if (!this.scrollToEnd && restoreCursor) {
+						restoreCursor();
+						restoreCursor = null;
+					}
 				});
 				
 				tail.start().catch(error => this.$emit('fileNotFoundError', {file: this.file}));
