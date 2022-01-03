@@ -233,10 +233,8 @@
 				if (!this.$refs.fileViewer) {
 					return undefined;
 				}
-				const tabIndex = this.tabs
-						.filter(tab => tab.hasFile())
-						.findIndex(tab => 'tab' + tab.id === tabId);
-				return this.$refs.fileViewer[tabIndex];
+				return this.$refs.fileViewer
+						.find(viewer => viewer.$parent.value === tabId);
 			},
 			cursorTimestampChanged(timestamp, scrollOffset, cursorColumn, source) {
 				if (source !== this.getViewerForTab(this.currentTab)) {
