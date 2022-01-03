@@ -136,7 +136,9 @@
 		},
 		methods: {
 			newTab() {
-				this.tabs.push(new Tab(this.$t("new-file")));
+				const tab = new Tab(this.$t("new-file"));
+				this.tabs.push(tab);
+				this.currentTab = 'tab' + tab.id;
 			},
 			closeTab(index) {
 				userPreferences.removeFile(this.tabs[index].filePath);
