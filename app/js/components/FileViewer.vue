@@ -158,7 +158,7 @@
 
 						return {
 							severitySettings: severitySettings,
-							line: line
+							line: this.sanitizeLine(line)
 						};
 					})
 					.filter(line => line.severitySettings.show)
@@ -208,7 +208,7 @@
 			},
 			getTimestampFromLine(row) {
 				const line = this.viewer.session.getLine(row);
-				const regex = /^\s*(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}(\.\d+)?)/;
+				const regex = /^\s*(\d{4}\W\d{2}\W\d{2}(\s+|T)\d{2}:\d{2}:\d{2}(\.\d+)?)/;
 				const matches = line.match(regex);
 				if (matches && matches[1]) {
 					let timestamp = Date.parse(matches[1]);
@@ -276,6 +276,11 @@
 				}
 
 				return best;
+			},
+			sanitizeLine(line) {
+				// Strip terminal color codes.
+				const regex = /\u001b\[\d+m/g;
+				return line.replace(regex, '');
 			}
 		}
 	}
