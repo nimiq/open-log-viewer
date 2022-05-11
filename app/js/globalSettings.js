@@ -32,8 +32,16 @@ module.exports = class GlobalSettings {
             pattern: "ERROR"
         };
 
+        this.tags = {};
+
         if (settings) {
             Object.assign(this, settings);
         }
+    }
+
+    addTag(tag) {
+        this.tags[tag] = {
+            pattern: tag.toUpperCase()
+        };
     }
 }

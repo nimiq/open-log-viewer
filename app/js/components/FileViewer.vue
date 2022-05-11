@@ -10,6 +10,12 @@
 			<v-flex xs4>
         		<v-select multiple v-model="logLevelsSelected" :items="logLevels" @change="logLevelsToShowChanged"></v-select>
 			</v-flex>
+				
+			<v-spacer></v-spacer>
+
+			<v-flex xs4>
+        		<v-select multiple v-model="logTagsSelected" :items="logTags" @change="logLevelsToShowChanged"></v-select>
+			</v-flex>
 
 			<v-spacer></v-spacer>
 
@@ -52,7 +58,9 @@
 			return {
 				toolbarHeight: 40,
 				logLevels: ["Trace", "Debug", "Info", "Warning", "Error"],
+				logTags: [],
 				logLevelsSelected: this.getLogLevelsToShow(),
+				logTagsSelected: [],
 				height: this.calcHeight(),
 				scrollToEnd: false,
 				syncTimestamps: true,
@@ -148,16 +156,29 @@
 				tail.on('readLines', lines => {
 					lines.map(line => {
 						let severitySettings = this.getSeveritySettings(line);
+						//let tagSettings = this.getTagSettings(line);
 
 						if (!severitySettings) {
 							severitySettings = previousLineSeveritySettings;
 						}
 						else {
 							previousLineSeveritySettings = severitySettings;
+							let temp = line.match(/(\w+)\s*\|/);
+							if(temp !== null)
+								temp=temp[1];
+
+							if(this.currentFileSettings.hasTag(temp)){
+								console.error(temp);
+								this.currentFileSettings.addTag(temp);
+								this.globalSettings.addTag(temp);
+								//console.error(this.globalSettings);
+								this.logTags.push(temp);
+							}
 						}
 
 						return {
 							severitySettings: severitySettings,
+							//tagSettings: tagSettings,
 							line: this.sanitizeLine(line)
 						};
 					})

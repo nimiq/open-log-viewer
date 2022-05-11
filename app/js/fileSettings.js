@@ -19,6 +19,16 @@ module.exports = class FileSettings {
         this.error = {
             show: true
         };
+
+        this.tags = {};
+    }
+
+    addTag(tag) {
+        this.tags[tag] = {show: true};
+    }
+
+    hasTag(tag) {
+        return this.tags[tag] === undefined;
     }
 
     static createFromSettings(settings) {
