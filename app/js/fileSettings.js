@@ -1,22 +1,24 @@
 module.exports = class FileSettings {
     constructor() {
-        this.trace = {
+        this.severity = {};
+
+        this.severity.trace = {
             show: true
         };
 
-        this.debug = {
+        this.severity.debug = {
             show: true
         };
 
-        this.info = {
+        this.severity.info = {
             show: true
         };
 
-        this.warning = {
+        this.severity.warning = {
             show: true
         };
 
-        this.error = {
+        this.severity.error = {
             show: true
         };
 
@@ -31,19 +33,35 @@ module.exports = class FileSettings {
         return this.tags[tag] === undefined;
     }
 
+    getLogTagsToShow() {
+        return Object.keys(this.tags).filter(tag => this.tags[tag].show);
+    }
+
+    getAllLogTags() {
+        return Object.keys(this.tags);
+    }
+
+    setLogTagsToShow(logTagsToShow) {
+        for (let tag in this.tags) {
+            this.tags[tag].show = false;
+        }
+
+        logTagsToShow.forEach(tag => this.tags[tag.toLowerCase()].show = true);
+    }
+
     static createFromSettings(settings) {
         return Object.assign(new FileSettings(), settings);
     }
 
     getLogLevelsToShow() {
-        return Object.keys(this).filter(severity => this[severity].show);
+        return Object.keys(this.severity).filter(severity => this.severity[severity].show);
     }
 
     setLogLevelsToShow(logLevelsToShow) {
-        for (let severity in this) {
-            this[severity].show = false;
+        for (let severity in this.severity) {
+            this.severity[severity].show = false;
         }
 
-        logLevelsToShow.forEach(severity => this[severity.toLowerCase()].show = true);
+        logLevelsToShow.forEach(severity => this.severity[severity.toLowerCase()].show = true);
     }
 }

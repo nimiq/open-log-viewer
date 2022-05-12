@@ -41,7 +41,16 @@ module.exports = class GlobalSettings {
 
     addTag(tag) {
         this.tags[tag] = {
-            pattern: tag.toUpperCase()
+            pattern: tag
         };
     }
+
+    getTagPattern(tag){
+        return tags[tag];
+    }
+
+    getAllTags() {
+        return Object.keys(this.tags);
+    }
+
 }
