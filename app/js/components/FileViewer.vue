@@ -66,8 +66,6 @@
 </template>
 
 <script>
-import { nextTick } from "process";
-
 const Tail = require("../tail");
 const AceEditor = require("../aceEditor");
 const UserPreferences = require("../userPreferences");
@@ -144,13 +142,11 @@ export default {
 			}
 		},
 		getTagSettings(line) {
-
-			let tag = line.match(/(\w+)\s*\|/);
+			let tag = line.match(/(\S+)\s*\|/);
 			if (tag !== null) {
 				tag = tag[1];
-				if (this.currentFileSettings.hasTag(tag)) {
+				if (!this.currentFileSettings.hasTag(tag)) {
 					this.currentFileSettings.addTag(tag);
-					this.globalSettings.addTag(tag);
 					this.logTags.push(tag);
 					this.logTagsSelected.push(tag);
 				}
@@ -207,22 +203,23 @@ export default {
 
 			tail.on('readLines', lines => {
 				lines.map(line => {
+					line = this.sanitizeLine(line);
+
 					let severitySettings = this.getSeveritySettings(line);
 					let tagSettings = this.getTagSettings(line);
 
 					if (!severitySettings) {
 						severitySettings = previousLineSeveritySettings;
 						tagSettings = previousLineTagSettings;
-					}
-					else {
+					} else {
 						previousLineSeveritySettings = severitySettings;
 						previousLineTagSettings = tagSettings;
 					}
 
 					return {
-						severitySettings: severitySettings,
-						tagSettings: tagSettings,
-						line: this.sanitizeLine(line)
+						severitySettings,
+						tagSettings,
+						line,
 					};
 				})
 					.filter(line => line.severitySettings.show && line.tagSettings.show)

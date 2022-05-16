@@ -30,7 +30,7 @@ module.exports = class FileSettings {
     }
 
     hasTag(tag) {
-        return this.tags[tag] === undefined;
+        return this.tags[tag] !== undefined;
     }
 
     getLogTagsToShow() {
