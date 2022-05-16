@@ -244,6 +244,9 @@ export default {
 					restoreCursor();
 					restoreCursor = null;
 				}
+
+				this.logTags.sort();
+				this.logTagsSelected.sort();
 			});
 
 			tail.start().catch(error => this.$emit('fileNotFoundError', { file: this.file }));
