@@ -224,8 +224,10 @@
 			},
 			changeFontSize(fontSize) {
 				if (fontSize) {
+					const lineHeight = this.getViewerForTab(this.currentTab).changeFontSize(fontSize, 0);
+					
 					this.$refs.fileViewer.forEach(fileViewer => {
-						fileViewer.changeFontSize(fontSize);
+						fileViewer.changeFontSize(fontSize, lineHeight);
 					});
 				}
 			},

@@ -91,7 +91,8 @@ export default {
 			height: this.calcHeight(),
 			scrollToEnd: false,
 			syncTimestamps: true,
-			currentFileSettings: this.fileSettings
+			currentFileSettings: this.fileSettings,
+			lineHeight: 20
 		}
 	},
 	mounted: function () {
@@ -173,7 +174,7 @@ export default {
 
 			// Preserve cursor timestamp.
 			const cursor = this.viewer.selection.getCursor();
-			const timestamp = this.getTimestampFromLine(cursor.row);
+			const timestamp = this.getTimestampFromParentLine(cursor.row);
 			const scrollOffset = this.viewer.session.getScrollTop() - this.getRowOffset(cursor.row);
 			const restoreCursor = this.scrollToTimestamp.bind(this, timestamp, scrollOffset, cursor.column);
 
@@ -183,8 +184,12 @@ export default {
 		clean() {
 			this.viewer.setValue("");
 		},
-		changeFontSize(fontSize) {
+		changeFontSize(fontSize, lineHeight) {
+			if(lineHeight !== 0) {
+				this.lineHeight = lineHeight;
+			}
 			this.viewer.setFontSize(fontSize + "px");
+			return this.viewer.renderer.lineHeight;
 		},
 		syncTimestampsClicked() {
 			this.syncTimestamps = !this.syncTimestamps;
@@ -272,13 +277,26 @@ export default {
 		},
 		getTimestampFromLine(row) {
 			const line = this.viewer.session.getLine(row);
-			const regex = /^\s*(\d{4}\W\d{2}\W\d{2}(\s+|T)\d{2}:\d{2}:\d{2}(\.\d+)?)/;
+			const regex = /\s*(\d{4}\W\d{2}\W\d{2}(\s+|T)\d{2}:\d{2}:\d{2}(\.\d+)?)/;
 			const matches = line.match(regex);
 			if (matches && matches[1]) {
 				let timestamp = Date.parse(matches[1]);
 				return !isNaN(timestamp) ? timestamp : 0;
 			}
 			return 0;
+		},
+		getTimestampFromParentLine(row) {
+			let timeStampInLine = 0;
+			let parentRow = row;
+			let line;
+			while (timeStampInLine === 0) {
+				line = this.viewer.session.getLine(parentRow);
+				timeStampInLine = this.getTimestampFromLine(parentRow,false);
+				parentRow--;
+				if (parentRow < 0)
+					return 0;
+			}
+			return timeStampInLine;
 		},
 		scrollToTimestamp(timestamp, scrollOffset, cursorColumn) {
 			if (!this.syncTimestamps) {
@@ -298,9 +316,7 @@ export default {
 		},
 		getRowOffset(row) {
 			const pos = this.viewer.session.documentToScreenPosition({ row: row, column: 0 });
-			// FIXME Get line height from editor (or fix editor scrolling).
-			//  Only works with the default font size.
-			return pos.row * 18;
+			return pos.row * this.lineHeight;
 		},
 		findRowAtTimestamp(timestamp) {
 			let lo = 0;
