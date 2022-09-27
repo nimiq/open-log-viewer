@@ -343,8 +343,12 @@ export default {
 		},
 		sanitizeLine(line) {
 			// Strip terminal color codes.
-			const regex = /\u001b\[\d+m/g;
-			return line.replace(regex, '');
+			const regexColorCodes = /\u001b\[\d+m/g;
+			line = line.replace(regexColorCodes, '');
+
+			// Strip system log prefix.
+			const regexSystemLog = /^[A-Z][a-z]{2}\s.+?\[\d+\]:\s/;
+			return line.replace(regexSystemLog, '');
 		},
 		toggle() {
 			this.$nextTick(() => {
